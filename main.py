@@ -16,34 +16,34 @@ def main():
     # Model bilgisi
     model_name = "csebuetnlp/mT5_multilingual_XLSum"
 
-    # Model ve tokenizer yükle
+    # Model ve tokenizer yükleme
     tokenizer = AutoTokenizer.from_pretrained(model_name, use_auth_token=hf_token)
     model = AutoModelForSeq2SeqLM.from_pretrained(model_name, use_auth_token=hf_token)
 
     # Özetleme pipeline'ı
     summarizer = pipeline("summarization", model=model, tokenizer=tokenizer)
 
-    # 📄 PDF dosyasının yolu
-    pdf_path = "ornek.pdf"  # Kendi dosya adınla değiştir
+    # PDF dosyasının yolu
+    pdf_path = "ornek.pdf"  
     full_text = read_pdf(pdf_path)
 
-    # Uzun metni parçalara ayır
+    # Uzun metni parçalara ayırma
     chunk_size = 1000
     chunks = [full_text[i:i+chunk_size] for i in range(0, len(full_text), chunk_size)]
 
     all_summaries = []
 
-    print("📢 Özetler:")
+    print(" Özetler:")
     for i, chunk in enumerate(chunks):
         summary = summarizer(chunk, max_length=60, min_length=25, do_sample=False)[0]['summary_text']
         print(f"\n👉 Bölüm {i+1} Özeti:\n{summary}")
         all_summaries.append(summary)
 
-    # 🔄 Tüm özetleri birleştir ve son özetle
+    # Tüm özetleri birleştir ve son kez hepsini özetle
     combined_text = " ".join(all_summaries)
     final_summary = summarizer(combined_text, max_length=243, min_length=40, do_sample=False)[0]['summary_text']
 
-    print("\n🟩 BİRLEŞTİRİLMİŞ TEK ÖZET 🟩\n")
+    print("\n BİRLEŞTİRİLMİŞ TEK ÖZET \n")
     print(final_summary)
 if __name__ == "__main__":
     main() 
